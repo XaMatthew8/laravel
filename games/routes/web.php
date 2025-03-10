@@ -4,6 +4,22 @@ use App\Http\Controllers\MangaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AutorController;
+use App\Http\Controllers\EditorialController;
+use App\Http\Controllers\GeneroController;
+use App\Http\Controllers\ResenaController;
+
+Route::resource('mangas', MangaController::class);
+Route::resource('authors', AutorController::class);
+Route::resource('editorials', EditorialController::class);
+Route::resource('generos', GeneroController::class);
+Route::resource('Resenas', ResenaController::class)->only(['store', 'destroy']);
+
+// Rutas adicionales
+Route::get('/mangas/{manga}/resenas', [ResenaController::class, 'index'])->name('mangas.resenas.index');
+Route::get('/authors/{author}/mangas', [AutorController::class, 'mangas'])->name('autors.mangas');
+Route::get('/gditorials/{editorial}/mangas', [EditorialController::class, 'mangas'])->name('editorials.mangas');
+Route::get('/generos/{genero}/mangas', [GeneroController::class, 'mangas'])->name('generos.mangas');
 Route::get('/', function () {
     return view('welcome');
 });
