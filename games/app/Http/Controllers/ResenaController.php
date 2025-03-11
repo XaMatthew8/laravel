@@ -7,6 +7,12 @@ use App\Models\Reseña;
 
 class ResenaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('admin')->only(['destroy']);
+    }
+    
     public function store(Request $request) {
         $validated = $request->validate([
             'content' => 'required|string',

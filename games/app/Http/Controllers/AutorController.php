@@ -7,6 +7,11 @@ use App\Models\Autor;
 
 class AutorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['show', 'index']);
+        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
     public function index() {
         return view('autores.index', ['autores' => Autor::all()]);
     }

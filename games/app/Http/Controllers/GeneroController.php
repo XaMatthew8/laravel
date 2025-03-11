@@ -7,6 +7,12 @@ use App\Models\Genero;
 
 class GeneroController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['show', 'index']);
+        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     public function index() {
         return view('generos.index', ['generos' => Genero::all()]);
     }
