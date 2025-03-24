@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Manga;
+use App\Models\Editorial;
+use App\Models\Autor;
+use App\Models\Genero;
 
 class MangaController extends Controller
 {
@@ -13,22 +16,28 @@ class MangaController extends Controller
         $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
     public function index() {
-        return view('mangas.index', ['mangas' => Manga::all()]);
+        $mangas = Manga::with(['autores', 'editorial', 'generos'])->get();
+        return view('mangas.index', compact('mangas'));
     }
     
     public function show(Manga $manga) {
         return view('mangas.show', compact('manga'));
     }
     
-    public function create() {
-        return view('mangas.create');
+    public function create()
+    {
+        $editoriales = Editorial::all();
+        $autores = Autor::all();
+        $generos = Genero::all();
+        
+        return view('mangas.create', compact('editoriales', 'autores', 'generos'));
     }
     
     public function store(Request $request) {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'autor_id' => 'required|exists:autores,id',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'fecha_publicacion' => 'required|date',
             'editorial_id' => 'required|exists:editoriales,id',
         ]);
         
@@ -42,9 +51,9 @@ class MangaController extends Controller
     
     public function update(Request $request, Manga $manga) {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'autor_id' => 'required|exists:autores,id',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'fecha_publicacion' => 'required|date',
             'editorial_id' => 'required|exists:editoriales,id',
         ]);
         

@@ -16,6 +16,21 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('mangas.index')" :active="request()->routeIs('mangas.*')">
+                        {{ __('Mangas') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('authors.index')" :active="request()->routeIs('authors.*')">
+                        {{ __('Autores') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('editorials.index')" :active="request()->routeIs('editorials.*')">
+                        {{ __('Editoriales') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->
@@ -43,7 +58,7 @@
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
@@ -70,6 +85,15 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('mangas.index')" :active="request()->routeIs('mangas.*')">
+                {{ __('Mangas') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('authors.index')" :active="request()->routeIs('authors.*')">
+                {{ __('Autores') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('editorials.index')" :active="request()->routeIs('editorials.*')">
+                {{ __('Editoriales') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -89,7 +113,7 @@
                     @csrf
 
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>

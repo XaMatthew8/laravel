@@ -13,38 +13,57 @@ class EditorialController extends Controller
         $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
 
-    public function index() {
-        return view('editoriales.index', ['editoriales' => Editorial::all()]);
+    public function index()
+    {
+        $editoriales = Editorial::with(['mangas'])->get();
+        return view('editoriales.index', compact('editoriales'));
     }
-    
-    public function create() {
+
+    public function show(Editorial $editorial)
+    {
+        $editorial->load(['mangas.reseñas']);
+        return view('editoriales.show', compact('editorial'));
+    }
+
+    public function create()
+    {
         return view('editoriales.create');
     }
-    
-    public function store(Request $request) {
+
+    public function store(Request $request)
+    {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'fecha_fundacion' => 'required|date',
+            'pais_origen' => 'required|string|max:100',
         ]);
-        
+
         Editorial::create($validated);
-        return redirect()->route('editoriales.index');
+        return redirect()->route('editorials.index');
     }
-    
-    public function edit(Editorial $editorial) {
+
+    public function edit(Editorial $editorial)
+    {
         return view('editoriales.edit', compact('editorial'));
     }
-    
-    public function update(Request $request, Editorial $editorial) {
+
+    public function update(Request $request, Editorial $editorial)
+    {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'fecha_fundacion' => 'required|date',
+            'pais_origen' => 'required|string|max:100',
         ]);
-        
+
         $editorial->update($validated);
-        return redirect()->route('editoriales.index');
+        return redirect()->route('editorials.index');
     }
-    
-    public function destroy(Editorial $editorial) {
+
+    public function destroy(Editorial $editorial)
+    {
         $editorial->delete();
-        return redirect()->route('editoriales.index');
+        return redirect()->route('editorials.index');
     }
 }
