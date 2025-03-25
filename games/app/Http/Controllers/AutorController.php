@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Autor;
+use App\Http\Middleware\AdminMiddleware;
 
 class AutorController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['show', 'index']);
-        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('auth');
+        $this->middleware(AdminMiddleware::class)->except(['index', 'show', 'mangas']);
     } 
     
     public function index() {
@@ -18,9 +19,14 @@ class AutorController extends Controller
         return view('autores.index', compact('autores'));
     }
     
-    public function show(Autor $author) {
-        $author->load(['mangas.reseñas']);
-        return view('autores.show', ['autor' => $author]);
+    public function show(Autor $autor) {
+        $autor->load(['mangas.reseñas']);
+        return view('autores.show', compact('autor'));
+    }
+    
+    public function mangas(Autor $autor) {
+        $mangas = $autor->mangas()->with(['genero', 'editorial'])->get();
+        return view('autores.mangas', compact('autor', 'mangas'));
     }
     
     public function create() {
@@ -31,32 +37,28 @@ class AutorController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'biografia' => 'required|string',
-            'fecha_nacimiento' => 'required|date',
-            'nacionalidad' => 'required|string|max:100',
         ]);
         
         Autor::create($validated);
-        return redirect()->route('authors.index');
+        return redirect()->route('autores.index')->with('success', 'Autor creado exitosamente');
     }
     
-    public function edit(Autor $author) {
-        return view('autores.edit', ['autor' => $author]);
+    public function edit(Autor $autor) {
+        return view('autores.edit', compact('autor'));
     }
     
-    public function update(Request $request, Autor $author) {
+    public function update(Request $request, Autor $autor) {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'biografia' => 'required|string',
-            'fecha_nacimiento' => 'required|date',
-            'nacionalidad' => 'required|string|max:100',
         ]);
         
-        $author->update($validated);
-        return redirect()->route('authors.index');
+        $autor->update($validated);
+        return redirect()->route('autores.index')->with('success', 'Autor actualizado exitosamente');
     }
     
-    public function destroy(Autor $author) {
-        $author->delete();
-        return redirect()->route('authors.index');
+    public function destroy(Autor $autor) {
+        $autor->delete();
+        return redirect()->route('autores.index')->with('success', 'Autor eliminado exitosamente');
     }
 }

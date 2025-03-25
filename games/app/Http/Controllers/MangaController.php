@@ -8,13 +8,14 @@ use App\Models\Editorial;
 use App\Models\Autor;
 use App\Models\Genero;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\AdminMiddleware;
 
 class MangaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['show', 'index']);
-        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware(AdminMiddleware::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
     public function index() {
         $mangas = Manga::with(['autores', 'editorial', 'generos']);
@@ -48,7 +49,7 @@ class MangaController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'fecha_publicacion' => 'required|date',
-            'editorial_id' => 'required|exists:editoriales,id',
+            'editorial_id' => 'required|exists:editorials,id',
         ]);
         
         Manga::create($validated);
@@ -56,7 +57,10 @@ class MangaController extends Controller
     }
     
     public function edit(Manga $manga) {
-        return view('mangas.edit', compact('manga'));
+        $editorials = Editorial::all();
+        $autores = Autor::all();
+        $generos = Genero::all();
+        return view('mangas.edit', compact('manga', 'editorials', 'autores', 'generos'));
     }
     
     public function update(Request $request, Manga $manga) {
@@ -64,15 +68,38 @@ class MangaController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'fecha_publicacion' => 'required|date',
-            'editorial_id' => 'required|exists:editoriales,id',
+            'editorial_id' => 'required|exists:editorials,id',
+            'autores' => 'required|array|min:1',
+            'autores.*' => 'exists:autors,id',
+            'generos' => 'required|array|min:1',
+            'generos.*' => 'exists:generos,id',
         ]);
         
-        $manga->update($validated);
-        return redirect()->route('mangas.index');
+        $manga->update([
+            'titulo' => $validated['titulo'],
+            'descripcion' => $validated['descripcion'],
+            'fecha_publicacion' => $validated['fecha_publicacion'],
+            'editorial_id' => $validated['editorial_id'],
+        ]);
+
+        $manga->autores()->sync($validated['autores']);
+        $manga->generos()->sync($validated['generos']);
+
+        return redirect()->route('mangas.index')->with('success', 'Manga actualizado correctamente');
     }
     
     public function destroy(Manga $manga) {
         $manga->delete();
         return redirect()->route('mangas.index');
+    }
+
+    public function estados() {
+        $mangas = Manga::with(['autores', 'editorial', 'generos'])
+            ->with(['usuariosConEstado' => function($query) {
+                $query->where('user_id', Auth::id());
+            }])
+            ->get();
+
+        return view('mangas.estados', compact('mangas'));
     }
 }

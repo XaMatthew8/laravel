@@ -10,33 +10,46 @@ use App\Http\Controllers\GeneroController;
 use App\Http\Controllers\ResenaController;
 use App\Http\Controllers\MangaStateController;
 
-Route::resource('mangas', MangaController::class);
-Route::resource('authors', AutorController::class);
-Route::resource('editorials', EditorialController::class);
-Route::resource('generos', GeneroController::class);
-Route::resource('Resenas', ResenaController::class)->only(['store', 'destroy']);
-
-// Rutas adicionales
-Route::get('/mangas/{manga}/resenas', [ResenaController::class, 'index'])->name('mangas.resenas.index');
-Route::get('/authors/{author}/mangas', [AutorController::class, 'mangas'])->name('autors.mangas');
-Route::get('/gditorials/{editorial}/mangas', [EditorialController::class, 'mangas'])->name('editorials.mangas');
-Route::get('/generos/{genero}/mangas', [GeneroController::class, 'mangas'])->name('generos.mangas');
+// Rutas públicas
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Rutas de mangas
+Route::resource('mangas', MangaController::class);
 
+// Rutas públicas adicionales
+Route::get('/autores/{autor}/mangas', [AutorController::class, 'mangas'])->name('autores.mangas');
+Route::get('/editorials/{editorial}/mangas', [EditorialController::class, 'mangas'])->name('editorials.mangas');
+Route::get('/generos/{genero}/mangas', [GeneroController::class, 'mangas'])->name('generos.mangas');
+
+// Rutas que requieren autenticación
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/mis-mangas', [MangaStateController::class, 'index'])->name('manga.states');
-    Route::put('/manga/{manga}/state', [MangaStateController::class, 'updateState'])->name('manga.state.update');
-    Route::delete('/manga/{manga}/state', [MangaStateController::class, 'removeState'])->name('manga.state.remove');
+    // Rutas de estados de manga para usuarios normales
+    Route::post('/mangas/{manga}/state', [MangaStateController::class, 'store'])->name('manga.state.store');
+    Route::put('/mangas/{manga}/state', [MangaStateController::class, 'update'])->name('manga.state.update');
+    Route::delete('/mangas/{manga}/state', [MangaStateController::class, 'destroy'])->name('manga.state.remove');
+    Route::get('/mis-mangas', [MangaStateController::class, 'index'])->name('manga.state.index');
+
+    // Rutas de reseñas (requieren autenticación)
+    Route::resource('resenas', ResenaController::class)->only(['store', 'destroy']);
+    Route::get('/mangas/{manga}/resenas', [ResenaController::class, 'index'])->name('mangas.resenas.index');
+
+    // Rutas adicionales para manga
+    Route::get('/mangas/estados', [MangaController::class, 'estados'])->name('mangas.estados');
 });
+
+// Rutas de administración de recursos (protegidas por middleware en sus respectivos controladores)
+Route::resource('autores', AutorController::class)->parameters(['autores' => 'autor']);
+Route::resource('editorials', EditorialController::class);
+Route::resource('generos', GeneroController::class)->except(['show']);
 
 require __DIR__.'/auth.php';

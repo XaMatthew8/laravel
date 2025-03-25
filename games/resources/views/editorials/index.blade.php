@@ -27,7 +27,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($editoriales as $editorial)
+                                @foreach($editorials as $editorial)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-4 py-3">
                                         <div class="font-medium">

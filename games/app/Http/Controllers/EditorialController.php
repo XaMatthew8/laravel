@@ -4,30 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Editorial;
+use App\Http\Middleware\AdminMiddleware;
 
 class EditorialController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['show', 'index']);
-        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('auth');
+        $this->middleware(AdminMiddleware::class)->except(['index', 'show', 'mangas']);
     }
 
     public function index()
     {
-        $editoriales = Editorial::with(['mangas'])->get();
-        return view('editoriales.index', compact('editoriales'));
+        $editorials = Editorial::with(['mangas'])->get();
+        return view('editorials.index', compact('editorials'));
     }
 
     public function show(Editorial $editorial)
     {
         $editorial->load(['mangas.reseñas']);
-        return view('editoriales.show', compact('editorial'));
+        return view('editorials.show', compact('editorial'));
     }
 
     public function create()
     {
-        return view('editoriales.create');
+        return view('editorials.create');
     }
 
     public function store(Request $request)
@@ -45,7 +46,7 @@ class EditorialController extends Controller
 
     public function edit(Editorial $editorial)
     {
-        return view('editoriales.edit', compact('editorial'));
+        return view('editorials.edit', compact('editorial'));
     }
 
     public function update(Request $request, Editorial $editorial)

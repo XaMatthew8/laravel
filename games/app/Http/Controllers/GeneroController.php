@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Genero;
+use App\Http\Middleware\AdminMiddleware;
 
 class GeneroController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['show', 'index']);
-        $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
+        $this->middleware('auth');
+        $this->middleware(AdminMiddleware::class)->except(['index', 'show', 'mangas']);
     }
 
     public function index() {

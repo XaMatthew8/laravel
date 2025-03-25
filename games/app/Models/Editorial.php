@@ -9,8 +9,10 @@ class Editorial extends Model
 {
     use HasFactory;
 
+    protected $table = 'editorials';
+
     protected $fillable = [
-        'nombre', 'direccion'
+        'nombre'
     ];
 
     public function mangas()

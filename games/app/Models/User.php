@@ -16,6 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin',
     ];
 
     protected $hidden = [
@@ -26,6 +27,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'admin' => 'boolean',
     ];
 
     public function reseñas()
@@ -66,5 +68,9 @@ class User extends Authenticatable
         return $this->mangasConEstado()
                     ->wherePivot('state', 'abandonado')
                     ->with(['autores', 'editorial']);
+    }
+
+    public function is_admin() {
+        return $this->admin === true;
     }
 }
