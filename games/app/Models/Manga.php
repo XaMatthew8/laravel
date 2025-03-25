@@ -30,6 +30,33 @@ class Manga extends Model
 
     public function reseñas()
     {
-        return $this->hasMany(Reseña::class);
+        return $this->hasMany(Reseña::class, 'manga_id');
+    }
+
+    public function usuariosConEstado()
+    {
+        return $this->belongsToMany(User::class, 'manga_user_states')
+                    ->withPivot('state')
+                    ->withTimestamps();
+    }
+
+    public function usuariosLeyendo()
+    {
+        return $this->usuariosConEstado()->wherePivot('state', 'leyendo');
+    }
+
+    public function usuariosLeido()
+    {
+        return $this->usuariosConEstado()->wherePivot('state', 'leido');
+    }
+
+    public function usuariosPendiente()
+    {
+        return $this->usuariosConEstado()->wherePivot('state', 'pendiente');
+    }
+
+    public function usuariosAbandonado()
+    {
+        return $this->usuariosConEstado()->wherePivot('state', 'abandonado');
     }
 }

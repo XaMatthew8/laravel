@@ -14,7 +14,8 @@ class GeneroController extends Controller
     }
 
     public function index() {
-        return view('generos.index', ['generos' => Genero::all()]);
+        $generos = Genero::withCount('mangas')->get();
+        return view('generos.index', compact('generos'));
     }
     
     public function create() {
@@ -27,24 +28,30 @@ class GeneroController extends Controller
         ]);
 
         Genero::create($validated);
-        return redirect()->route('generos.index');
+        return redirect()->route('generos.index')->with('success', 'Género creado correctamente');
     }
     
-    public function edit(Genero $Genero) {
-        return view('generos.edit', compact('Genero'));
+    public function edit(Genero $genero) {
+        return view('generos.edit', compact('genero'));
     }
     
-    public function update(Request $request, Genero $Genero) {
+    public function update(Request $request, Genero $genero) {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
         
-        $Genero->update($validated);
-        return redirect()->route('generos.index');
+        $genero->update($validated);
+        return redirect()->route('generos.index')->with('success', 'Género actualizado correctamente');
     }
     
-    public function destroy(Genero $Genero) {
-        $Genero->delete();
-        return redirect()->route('generos.index');
+    public function destroy(Genero $genero) {
+        $genero->delete();
+        return redirect()->route('generos.index')->with('success', 'Género eliminado correctamente');
+    }
+
+    public function mangas(Genero $genero)
+    {
+        $mangas = $genero->mangas()->with(['autores', 'editorial'])->get();
+        return view('generos.mangas', compact('genero', 'mangas'));
     }
 }

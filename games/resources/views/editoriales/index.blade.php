@@ -20,15 +20,15 @@
                         <table class="w-full table-auto">
                             <thead>
                                 <tr class="bg-gray-100 dark:bg-gray-700">
-                                    <th class="w-1/4 px-4 py-2 text-left">Nombre</th>
-                                    <th class="w-2/4 px-4 py-2 text-left">Descripción</th>
-                                    <th class="w-1/12 px-4 py-2 text-center">Mangas</th>
+                                    <th class="w-1/3 px-4 py-2 text-left">Nombre</th>
+                                    <th class="w-1/3 px-4 py-2 text-left">Descripción</th>
+                                    <th class="w-1/6 px-4 py-2 text-center">Mangas</th>
                                     <th class="w-1/6 px-4 py-2 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($editoriales as $editorial)
-                                <tr class="border-b dark:border-gray-700">
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-4 py-3">
                                         <div class="font-medium">
                                             {{ $editorial->nombre }}
@@ -39,11 +39,15 @@
                                             {{ $editorial->descripcion }}
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-center">
-                                        {{ $editorial->mangas->count() }}
+                                    <td class="px-4 py-3">
+                                        <div class="flex justify-center">
+                                            <span class="w-8 text-center font-medium">
+                                                {{ $editorial->mangas->count() }}
+                                            </span>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <div class="flex justify-center space-x-3">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center justify-center space-x-3">
                                             <a href="{{ route('editorials.show', ['editorial' => $editorial]) }}" 
                                                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                                 Ver

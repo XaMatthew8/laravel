@@ -11,24 +11,24 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('mangas.index')" :active="request()->routeIs('mangas.*')">
                         {{ __('Mangas') }}
                     </x-nav-link>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('authors.index')" :active="request()->routeIs('authors.*')">
                         {{ __('Autores') }}
                     </x-nav-link>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('editorials.index')" :active="request()->routeIs('editorials.*')">
                         {{ __('Editoriales') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('generos.index')" :active="request()->routeIs('generos.*')">
+                        {{ __('Géneros') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('manga.states')" :active="request()->routeIs('manga.states')">
+                        {{ __('Mis Mangas') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -93,6 +93,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('editorials.index')" :active="request()->routeIs('editorials.*')">
                 {{ __('Editoriales') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('generos.index')" :active="request()->routeIs('generos.*')">
+                {{ __('Géneros') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('manga.states')" :active="request()->routeIs('manga.states')">
+                {{ __('Mis Mangas') }}
             </x-responsive-nav-link>
         </div>
 

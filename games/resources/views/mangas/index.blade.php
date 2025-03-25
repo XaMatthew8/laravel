@@ -33,6 +33,9 @@
                                         Género
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Estado
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Acciones
                                     </th>
                                 </tr>
@@ -59,6 +62,21 @@
                                             <div class="text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $manga->generos->pluck('nombre')->join(', ') ?? 'Sin género' }}
                                             </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @auth
+                                                <form action="{{ route('manga.state.update', $manga) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <select name="state" onchange="this.form.submit()" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm">
+                                                        <option value="">Añadir a mi lista</option>
+                                                        <option value="leyendo" {{ $manga->usuariosConEstado->first()?->pivot->state === 'leyendo' ? 'selected' : '' }}>Leyendo</option>
+                                                        <option value="pendiente" {{ $manga->usuariosConEstado->first()?->pivot->state === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                                                        <option value="leido" {{ $manga->usuariosConEstado->first()?->pivot->state === 'leido' ? 'selected' : '' }}>Leído</option>
+                                                        <option value="abandonado" {{ $manga->usuariosConEstado->first()?->pivot->state === 'abandonado' ? 'selected' : '' }}>Abandonado</option>
+                                                    </select>
+                                                </form>
+                                            @endauth
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-6">

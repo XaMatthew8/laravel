@@ -7,6 +7,7 @@ use App\Models\Manga;
 use App\Models\Editorial;
 use App\Models\Autor;
 use App\Models\Genero;
+use Illuminate\Support\Facades\Auth;
 
 class MangaController extends Controller
 {
@@ -16,7 +17,16 @@ class MangaController extends Controller
         $this->middleware('admin')->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
     public function index() {
-        $mangas = Manga::with(['autores', 'editorial', 'generos'])->get();
+        $mangas = Manga::with(['autores', 'editorial', 'generos']);
+        
+        if (Auth::check()) {
+            $mangas = $mangas->with(['usuariosConEstado' => function($query) {
+                $query->where('user_id', Auth::id());
+            }]);
+        }
+
+        $mangas = $mangas->get();
+
         return view('mangas.index', compact('mangas'));
     }
     

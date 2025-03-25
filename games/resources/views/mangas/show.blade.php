@@ -5,12 +5,33 @@
                 {{ $manga->titulo }}
             </h2>
             <div class="flex space-x-4">
-                <a href="{{ route('mangas.edit', $manga) }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                    {{ __('Editar Manga') }}
-                </a>
-                <a href="{{ route('mangas.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    {{ __('Volver') }}
-                </a>
+                @auth
+                    <form action="{{ route('manga.state.update', $manga) }}" method="POST" class="inline">
+                        @csrf
+                        @method('PUT')
+                        <select name="state" onchange="this.form.submit()" class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-900">
+                            <option value="">Añadir a mi lista</option>
+                            <option value="leyendo">Leyendo</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="leido">Leído</option>
+                            <option value="abandonado">Abandonado</option>
+                        </select>
+                    </form>
+                @endauth
+                @can('update', $manga)
+                    <a href="{{ route('mangas.edit', $manga) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Editar
+                    </a>
+                @endcan
+                @can('delete', $manga)
+                    <form action="{{ route('mangas.destroy', $manga) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('¿Estás seguro de que quieres eliminar este manga?')">
+                            Eliminar
+                        </button>
+                    </form>
+                @endcan
             </div>
         </div>
     </x-slot>

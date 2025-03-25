@@ -8,6 +8,7 @@ use App\Http\Controllers\AutorController;
 use App\Http\Controllers\EditorialController;
 use App\Http\Controllers\GeneroController;
 use App\Http\Controllers\ResenaController;
+use App\Http\Controllers\MangaStateController;
 
 Route::resource('mangas', MangaController::class);
 Route::resource('authors', AutorController::class);
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/mis-mangas', [MangaStateController::class, 'index'])->name('manga.states');
+    Route::put('/manga/{manga}/state', [MangaStateController::class, 'updateState'])->name('manga.state.update');
+    Route::delete('/manga/{manga}/state', [MangaStateController::class, 'removeState'])->name('manga.state.remove');
 });
 
 require __DIR__.'/auth.php';
