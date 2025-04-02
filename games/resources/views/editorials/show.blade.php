@@ -31,7 +31,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Fundación</label>
-                                    <p class="mt-1">{{ $editorial->fecha_fundacion->format('d/m/Y') }}</p>
+                                    <p class="mt-1">{{ $editorial->fecha_fundacion ? $editorial->fecha_fundacion->format('d/m/Y') : 'No especificada' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">País de Origen</label>

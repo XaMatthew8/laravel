@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
@@ -21,17 +20,12 @@ class AdminMiddleware
     {
         // Verificar si el usuario está autenticado y es admin
         if (!Auth::check()) {
-            Log::info('Usuario no autenticado');
             return redirect()->route('dashboard')
                 ->with('error', 'No tienes permisos de administrador.');
         }
 
         $user = Auth::user();
-        Log::info('Usuario autenticado: ' . $user->email);
-        Log::info('Es admin: ' . ($user->is_admin() ? 'Sí' : 'No'));
-        Log::info('Valor de admin en DB: ' . ($user->admin ? 'true' : 'false'));
-
-        if (!$user->is_admin()) {
+        if (!$user || !$user->admin) {
             return redirect()->route('dashboard')
                 ->with('error', 'No tienes permisos de administrador.');
         }
