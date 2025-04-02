@@ -1,140 +1,165 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ $manga->titulo }}
-            </h2>
-            <div class="flex space-x-4">
-                @auth
-                    <form action="{{ route('manga.state.update', $manga) }}" method="POST" class="inline">
-                        @csrf
-                        @method('PUT')
-                        <select name="state" onchange="this.form.submit()" class="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-900">
-                            <option value="">Añadir a mi lista</option>
-                            <option value="leyendo">Leyendo</option>
-                            <option value="pendiente">Pendiente</option>
-                            <option value="leido">Leído</option>
-                            <option value="abandonado">Abandonado</option>
-                        </select>
-                    </form>
-                @endauth
-                @can('update', $manga)
-                    <a href="{{ route('mangas.edit', $manga) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Editar
-                    </a>
-                @endcan
-                @can('delete', $manga)
-                    <form action="{{ route('mangas.destroy', $manga) }}" method="POST" class="inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('¿Estás seguro de que quieres eliminar este manga?')">
-                            Eliminar
-                        </button>
-                    </form>
-                @endcan
-            </div>
-        </div>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Información Principal -->
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Información Principal</h3>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    <p class="mb-2"><span class="font-medium">Título:</span> {{ $manga->titulo }}</p>
-                                    <p class="mb-2"><span class="font-medium">Descripción:</span> {{ $manga->descripcion }}</p>
-                                    <p class="mb-2"><span class="font-medium">Fecha de Publicación:</span> {{ $manga->fecha_publicacion }}</p>
-                                </div>
+@section('content')
+<div class="min-h-screen bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+            <div class="p-6">
+                <!-- Cabecera con tipo y rating -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm">
+                            MANGA
+                        </span>
+                        @if(auth()->user() && auth()->user()->admin)
+                            <a href="{{ route('mangas.edit', $manga) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-full text-sm transition duration-200">
+                                <i class="fas fa-edit mr-2"></i>Editar Manga
+                            </a>
+                            <form action="{{ route('mangas.destroy', $manga) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este manga?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-full text-sm transition duration-200">
+                                    <i class="fas fa-trash-alt mr-2"></i>Eliminar Manga
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                    <div class="flex items-center bg-gray-900 px-4 py-2 rounded-full">
+                        <i class="fas fa-star text-yellow-400 mr-2"></i>
+                        <span class="text-white font-bold">{{ number_format($manga->rating, 2) }}</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <!-- Columna Izquierda: Imagen y Estadísticas -->
+                    <div class="md:col-span-auto">
+                        <div class="flex gap-6">
+                            <div class="relative w-[350px] h-[500px]">
+                                <img 
+                                    src="{{ $manga->imagen_portada ?: 'https://placehold.co/350x500/1F2937/FFFFFF/png?text=No+Image' }}" 
+                                    alt="{{ $manga->titulo }}"
+                                    class="w-[350px] h-[500px] object-cover rounded-lg shadow-lg"
+                                >
                             </div>
 
-                            <!-- Autores -->
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Autores</h3>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    @if($manga->autores->count() > 0)
-                                        <ul class="list-disc list-inside">
-                                            @foreach($manga->autores as $autor)
-                                                <li>{{ $autor->nombre }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-gray-500 dark:text-gray-400">Sin autores asignados</p>
-                                    @endif
+                            
+                            <div class="md:col-span-auto flex-1">
+                                <div>
+                                    <h1 class="text-3xl font-bold text-white mb-4">{{ $manga->titulo }}</h1>
+        
+                                    <!-- Géneros -->
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach($manga->generos as $genero)
+                                            <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
+                                                {{ $genero->nombre }}
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-
-                            <!-- Géneros -->
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Géneros</h3>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    @if($manga->generos->count() > 0)
-                                        <div class="flex flex-wrap gap-2">
-                                            @foreach($manga->generos as $genero)
-                                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
-                                                    {{ $genero->nombre }}
-                                                </span>
-                                            @endforeach
+        
+                                <!-- Descripción -->
+                                <div class="bg-gray-900 rounded-lg p-6 mt-6">
+                                    <h3 class="text-xl font-semibold text-white mb-4">Sinopsis</h3>
+                                    <p class="text-gray-300 leading-relaxed">
+                                        {{ $manga->descripcion }}
+                                    </p>
+                                </div>
+        
+                                <!-- Información Adicional -->
+                                <div class="bg-gray-900 rounded-lg p-6 mt-6">
+                                    <h3 class="text-xl font-semibold text-white mb-4">Información</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <h4 class="text-gray-400">Editorial</h4>
+                                            <p class="text-white">{{ $manga->editorial->nombre }}</p>
                                         </div>
-                                    @else
-                                        <p class="text-gray-500 dark:text-gray-400">Sin géneros asignados</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Editorial y Reseñas -->
-                        <div class="space-y-6">
-                            <!-- Editorial -->
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Editorial</h3>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    @if($manga->editorial)
-                                        <p>{{ $manga->editorial->nombre }}</p>
-                                    @else
-                                        <p class="text-gray-500 dark:text-gray-400">Sin editorial asignada</p>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- Reseñas -->
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Reseñas</h3>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    @if($manga->reseñas->count() > 0)
-                                        <div class="space-y-4">
-                                            @foreach($manga->reseñas as $reseña)
-                                                <div class="border-b border-gray-200 dark:border-gray-600 pb-4 last:border-0">
-                                                    <div class="flex justify-between items-start">
-                                                        <div>
-                                                            <p class="font-medium">{{ $reseña->usuario->name }}</p>
-                                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $reseña->created_at->format('d/m/Y') }}</p>
-                                                        </div>
-                                                        <div class="flex items-center">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                <svg class="w-5 h-5 {{ $i <= $reseña->puntuacion ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                                </svg>
-                                                            @endfor
-                                                        </div>
-                                                    </div>
-                                                    <p class="mt-2 text-gray-600 dark:text-gray-300">{{ $reseña->comentario }}</p>
-                                                </div>
-                                            @endforeach
+                                        <div>
+                                            <h4 class="text-gray-400">Fecha de Publicación</h4>
+                                            <p class="text-white">{{ $manga->fecha_publicacion->format('d/m/Y') }}</p>
                                         </div>
-                                    @else
-                                        <p class="text-gray-500 dark:text-gray-400">No hay reseñas aún</p>
-                                    @endif
+                                        <div class="col-span-2">
+                                            <h4 class="text-gray-400">Autores</h4>
+                                            <p class="text-white">
+                                                @foreach($manga->autores as $autor)
+                                                    {{ $autor->nombre }}{{ !$loop->last ? ', ' : '' }}
+                                                @endforeach
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col justify-between">
+                                <!-- Estados del Manga -->
+                                <div class="space-y-4">
+                                    <!-- Leídos -->
+                                    <div class="@if($estadoActual === 'leido') bg-blue-900/60 @else bg-gray-900/60 @endif rounded-lg p-4 hover:bg-blue-900/40 transition-colors duration-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="@if($estadoActual === 'leido') text-blue-200 @else text-gray-300 @endif text-sm">Leídos</span>
+                                            <span class="text-blue-400 font-bold">{{ $estadisticas['leidos'] }}</span>
+                                        </div>
+                                        <form action="{{ route('mangas.cambiar-estado', $manga) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="leido">
+                                            <button type="submit" class="w-full bg-blue-600/80 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded transition duration-200">
+                                                <i class="fas fa-book-reader mr-2"></i> @if($estadoActual === 'leido') Leído @else Marcar como Leído @endif
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Leyendo -->
+                                    <div class="@if($estadoActual === 'leyendo') bg-green-900/60 @else bg-gray-900/60 @endif rounded-lg p-4 hover:bg-green-900/40 transition-colors duration-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="@if($estadoActual === 'leyendo') text-green-200 @else text-gray-300 @endif text-sm">Leyendo</span>
+                                            <span class="text-green-400 font-bold">{{ $estadisticas['leyendo'] }}</span>
+                                        </div>
+                                        <form action="{{ route('mangas.cambiar-estado', $manga) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="leyendo">
+                                            <button type="submit" class="w-full bg-green-600/80 hover:bg-green-700 text-white text-sm py-2 px-4 rounded transition duration-200">
+                                                <i class="fas fa-book-open mr-2"></i> @if($estadoActual === 'leyendo') Leyendo @else Estoy Leyendo @endif
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Pendientes -->
+                                    <div class="@if($estadoActual === 'pendiente') bg-yellow-900/60 @else bg-gray-900/60 @endif rounded-lg p-4 hover:bg-yellow-900/40 transition-colors duration-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="@if($estadoActual === 'pendiente') text-yellow-200 @else text-gray-300 @endif text-sm">Pendientes</span>
+                                            <span class="text-yellow-400 font-bold">{{ $estadisticas['pendientes'] }}</span>
+                                        </div>
+                                        <form action="{{ route('mangas.cambiar-estado', $manga) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="pendiente">
+                                            <button type="submit" class="w-full bg-yellow-600/80 hover:bg-yellow-700 text-white text-sm py-2 px-4 rounded transition duration-200">
+                                                <i class="fas fa-clock mr-2"></i> @if($estadoActual === 'pendiente') En Pendientes @else Añadir a Pendientes @endif
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Abandonados -->
+                                    <div class="@if($estadoActual === 'abandonado') bg-red-900/60 @else bg-gray-900/60 @endif rounded-lg p-4 hover:bg-red-900/40 transition-colors duration-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="@if($estadoActual === 'abandonado') text-red-200 @else text-gray-300 @endif text-sm">Abandonados</span>
+                                            <span class="text-red-400 font-bold">{{ $estadisticas['abandonados'] }}</span>
+                                        </div>
+                                        <form action="{{ route('mangas.cambiar-estado', $manga) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="abandonado">
+                                            <button type="submit" class="w-full bg-red-600/80 hover:bg-red-700 text-white text-sm py-2 px-4 rounded transition duration-200">
+                                                <i class="fas fa-times-circle mr-2"></i> @if($estadoActual === 'abandonado') Abandonado @else Abandonar @endif
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Columna Derecha: Información -->
+                   
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout> 
+</div>
+@endsection 

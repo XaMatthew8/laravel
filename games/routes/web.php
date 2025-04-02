@@ -17,6 +17,8 @@ Route::get('/', function () {
 
 // Rutas de mangas
 Route::resource('mangas', MangaController::class);
+Route::get('/mangas', [MangaController::class, 'index'])->name('mangas.index');
+Route::get('/mangas/{manga}', [MangaController::class, 'show'])->name('mangas.show');
 
 // Rutas públicas adicionales
 Route::get('/autores/{autor}/mangas', [AutorController::class, 'mangas'])->name('autores.mangas');
@@ -45,6 +47,9 @@ Route::middleware('auth')->group(function () {
 
     // Rutas adicionales para manga
     Route::get('/mangas/estados', [MangaController::class, 'estados'])->name('mangas.estados');
+
+    // Nueva ruta para cambiar el estado del manga
+    Route::post('/mangas/{manga}/cambiar-estado', [MangaController::class, 'cambiarEstado'])->name('mangas.cambiar-estado');
 });
 
 // Rutas de administración de recursos (protegidas por middleware en sus respectivos controladores)

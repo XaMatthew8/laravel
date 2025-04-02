@@ -2,30 +2,29 @@
 
 namespace Database\Seeders;
 
-use App\Models\Manga;
-use App\Models\Editorial;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Manga;
+use App\Models\Autor;
+use App\Models\Genero;
 
 class MangaSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Obtener alguna editorial para asignar a los mangas
-        $editorial = Editorial::first(); // Asegúrate de que haya al menos una editorial en la base de datos
-
-        Manga::factory()->create([
-            'titulo' => 'One Piece',
-            'descripcion' => 'Un manga de aventura y piratas.',
-            'fecha_publicacion' => '1997-07-22',
-            'editorial_id' => $editorial->id,
-        ]);
-
-        Manga::factory()->create([
-            'titulo' => 'Naruto',
-            'descripcion' => 'Un joven ninja busca reconocimiento mientras se enfrenta a numerosos enemigos.',
-            'fecha_publicacion' => '1999-09-21',
-            'editorial_id' => $editorial->id,
-        ]);
+        // Crear 20 mangas
+        Manga::factory()
+            ->count(20)
+            ->create()
+            ->each(function ($manga) {
+                // Asignar 1-3 autores aleatorios a cada manga
+                $manga->autores()->attach(
+                    Autor::inRandomOrder()->take(rand(1, 3))->pluck('id')->toArray()
+                );
+                
+                // Asignar 2-4 géneros aleatorios a cada manga
+                $manga->generos()->attach(
+                    Genero::inRandomOrder()->take(rand(2, 4))->pluck('id')->toArray()
+                );
+            });
     }
 }

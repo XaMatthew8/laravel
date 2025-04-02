@@ -10,7 +10,12 @@ class Manga extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titulo', 'descripcion', 'fecha_publicacion', 'editorial_id'
+        'titulo', 'descripcion', 'fecha_publicacion', 'editorial_id', 'rating', 'imagen_portada'
+    ];
+
+    protected $casts = [
+        'rating' => 'float',
+        'fecha_publicacion' => 'date'
     ];
 
     public function editorial()

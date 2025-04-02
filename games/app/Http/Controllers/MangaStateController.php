@@ -32,20 +32,34 @@ class MangaStateController extends Controller
         ));
     }
 
-    public function updateState(Request $request, Manga $manga)
+    public function update(Request $request, Manga $manga)
     {
         $request->validate([
-            'state' => 'required|in:leido,pendiente,leyendo,abandonado'
+            'state' => 'required|in:leido,leyendo,pendiente,abandonado'
         ]);
 
         /** @var User $user */
         $user = Auth::user();
-        
-        $user->mangasConEstado()->syncWithoutDetaching([
-            $manga->id => ['state' => $request->state]
-        ]);
+        $currentState = $user->mangasConEstado()->where('manga_id', $manga->id)->first();
 
-        return back()->with('success', 'Estado del manga actualizado correctamente');
+        if ($currentState) {
+            if ($currentState->pivot->state === $request->state) {
+                // Si el estado es el mismo, lo eliminamos
+                $user->mangasConEstado()->detach($manga->id);
+            } else {
+                // Si el estado es diferente, lo actualizamos
+                $user->mangasConEstado()->updateExistingPivot($manga->id, [
+                    'state' => $request->state
+                ]);
+            }
+        } else {
+            // Si no existe un estado, lo creamos
+            $user->mangasConEstado()->attach($manga->id, [
+                'state' => $request->state
+            ]);
+        }
+
+        return back()->with('success', 'Estado actualizado correctamente');
     }
 
     public function removeState(Manga $manga)

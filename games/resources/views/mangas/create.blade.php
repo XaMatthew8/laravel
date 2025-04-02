@@ -14,6 +14,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @if ($errors->any())
+                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                            <strong>¡Ups!</strong> Hay algunos problemas con tu entrada.<br><br>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form action="{{ route('mangas.store') }}" method="POST" class="space-y-6">
                         @csrf
 
@@ -24,7 +35,7 @@
                                     <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Título *
                                     </label>
-                                    <input type="text" name="titulo" id="titulo" required
+                                    <input type="text" name="titulo" id="titulo" required value="{{ old('titulo') }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
 
@@ -33,28 +44,32 @@
                                         Descripción *
                                     </label>
                                     <textarea name="descripcion" id="descripcion" rows="4" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('descripcion') }}</textarea>
                                 </div>
 
                                 <div>
                                     <label for="fecha_publicacion" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Fecha de Publicación *
                                     </label>
-                                    <input type="date" name="fecha_publicacion" id="fecha_publicacion" required
+                                    <input type="date" name="fecha_publicacion" id="fecha_publicacion" required value="{{ old('fecha_publicacion') }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
 
                                 <div>
-                                    <label for="precio" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Precio *
+                                    <label for="imagen_portada" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        URL de la Imagen de Portada
                                     </label>
-                                    <div class="mt-1 relative rounded-md shadow-sm">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">€</span>
-                                        </div>
-                                        <input type="number" name="precio" id="precio" step="0.01" required
-                                            class="pl-7 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    </div>
+                                    <input type="url" name="imagen_portada" id="imagen_portada" value="{{ old('imagen_portada') }}"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="https://ejemplo.com/imagen.jpg">
+                                </div>
+
+                                <div>
+                                    <label for="rating" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Rating
+                                    </label>
+                                    <input type="number" name="rating" id="rating" min="0" max="10" step="0.1" value="{{ old('rating', 0) }}"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
                             </div>
 
@@ -68,7 +83,9 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         <option value="">Selecciona una editorial</option>
                                         @foreach($editoriales as $editorial)
-                                            <option value="{{ $editorial->id }}">{{ $editorial->nombre }}</option>
+                                            <option value="{{ $editorial->id }}" {{ old('editorial_id') == $editorial->id ? 'selected' : '' }}>
+                                                {{ $editorial->nombre }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -80,7 +97,9 @@
                                     <select name="autores[]" id="autores" multiple required
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         @foreach($autores as $autor)
-                                            <option value="{{ $autor->id }}">{{ $autor->nombre }}</option>
+                                            <option value="{{ $autor->id }}" {{ in_array($autor->id, old('autores', [])) ? 'selected' : '' }}>
+                                                {{ $autor->nombre }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -95,7 +114,9 @@
                                     <select name="generos[]" id="generos" multiple required
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         @foreach($generos as $genero)
-                                            <option value="{{ $genero->id }}">{{ $genero->nombre }}</option>
+                                            <option value="{{ $genero->id }}" {{ in_array($genero->id, old('generos', [])) ? 'selected' : '' }}>
+                                                {{ $genero->nombre }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
