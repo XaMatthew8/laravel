@@ -46,7 +46,7 @@
                                                     <option value="abandonado">Abandonado</option>
                                                 </select>
                                             </form>
-                                            <form action="{{ route('manga.state.remove', $manga) }}" method="POST" class="inline">
+                                            <form action="{{ route('mangas.eliminar-estado', $manga) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
@@ -106,7 +106,7 @@
                                                     <option value="abandonado">Abandonado</option>
                                                 </select>
                                             </form>
-                                            <form action="{{ route('manga.state.remove', $manga) }}" method="POST" class="inline">
+                                            <form action="{{ route('mangas.eliminar-estado', $manga) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
@@ -166,7 +166,7 @@
                                                     <option value="abandonado">Abandonado</option>
                                                 </select>
                                             </form>
-                                            <form action="{{ route('manga.state.remove', $manga) }}" method="POST" class="inline">
+                                            <form action="{{ route('mangas.eliminar-estado', $manga) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
@@ -226,7 +226,7 @@
                                                     <option value="pendiente">Pendiente</option>
                                                 </select>
                                             </form>
-                                            <form action="{{ route('manga.state.remove', $manga) }}" method="POST" class="inline">
+                                            <form action="{{ route('mangas.eliminar-estado', $manga) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 

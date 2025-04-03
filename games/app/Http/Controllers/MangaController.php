@@ -206,4 +206,12 @@ class MangaController extends Controller
 
         return redirect()->back();
     }
+
+    public function eliminarEstado(Manga $manga)
+    {
+        // Eliminar el estado del manga para el usuario actual
+        $manga->usuariosConEstado()->detach(Auth::id());
+
+        return redirect()->back()->with('success', 'Estado eliminado correctamente');
+    }
 }

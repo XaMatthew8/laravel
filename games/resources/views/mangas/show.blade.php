@@ -30,7 +30,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div>
                     <!-- Columna Izquierda: Imagen y Estadísticas -->
                     <div class="md:col-span-auto">
                         <div class="flex gap-6">
@@ -154,9 +154,7 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Columna Derecha: Información -->
-                   
                 </div>
             </div>
         </div>

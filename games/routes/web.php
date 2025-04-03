@@ -50,11 +50,16 @@ Route::middleware('auth')->group(function () {
 
     // Nueva ruta para cambiar el estado del manga
     Route::post('/mangas/{manga}/cambiar-estado', [MangaController::class, 'cambiarEstado'])->name('mangas.cambiar-estado');
+    
+    // Nueva ruta para eliminar el estado del manga
+    Route::delete('/mangas/{manga}/eliminar-estado', [MangaController::class, 'eliminarEstado'])->name('mangas.eliminar-estado');
+
+    // Rutas de administración de recursos
+    Route::resource('generos', GeneroController::class)->except(['show']);
 });
 
 // Rutas de administración de recursos (protegidas por middleware en sus respectivos controladores)
 Route::resource('autores', AutorController::class)->parameters(['autores' => 'autor']);
 Route::resource('editorials', EditorialController::class);
-Route::resource('generos', GeneroController::class)->except(['show']);
 
 require __DIR__.'/auth.php';

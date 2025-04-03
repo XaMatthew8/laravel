@@ -44,12 +44,31 @@
                             <div class="mt-4">
                                 <p class="text-gray-600 dark:text-gray-300">
                                     <span class="font-medium">Tu estado:</span>
-                                    {{ $manga->usuariosConEstado->first()->pivot->estado }}
+                                    <span class="@switch($manga->usuariosConEstado->first()->pivot->estado)
+                                        @case('leido') text-blue-600 dark:text-blue-400
+                                        @break
+                                        @case('leyendo') text-green-600 dark:text-green-400
+                                        @break
+                                        @case('pendiente') text-yellow-600 dark:text-yellow-400
+                                        @break
+                                        @case('abandonado') text-red-600 dark:text-red-400
+                                        @break
+                                        @default text-gray-600 dark:text-gray-400
+                                    @endswitch font-medium">
+                                        {{ ucfirst($manga->usuariosConEstado->first()->pivot->estado) }}
+                                    </span>
                                 </p>
                             </div>
                         @endif
 
-                        <div class="mt-6 flex justify-end">
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <form action="{{ route('mangas.eliminar-estado', $manga) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar el estado de este manga?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-300">
+                                    <i class="fas fa-trash-alt mr-2"></i>Eliminar Estado
+                                </button>
+                            </form>
                             <a href="{{ route('mangas.show', $manga) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">
                                 Ver Detalles
                             </a>
